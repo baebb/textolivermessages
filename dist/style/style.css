@@ -6,3 +6,7 @@
 .form-control.form-control-tall {
     height: 200px;
 }
+
+.success-block {
+    padding: 10px 0;
+}
