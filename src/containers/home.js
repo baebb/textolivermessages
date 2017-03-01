@@ -1,6 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {Button, FormGroup, FormControl, ControlLabel} from 'react-bootstrap';
+import {Button, FormGroup, FormControl, ControlLabel, HelpBlock} from 'react-bootstrap';
 
 import {sendMessage} from '../actions/index';
 
@@ -9,7 +9,9 @@ class Home extends React.Component {
     super(props);
     
     this.state = {
-      message: ''
+      message: '',
+      error: '',
+      sent: false
     };
     
     this.validateMessage = this.validateMessage.bind(this);
@@ -18,16 +20,24 @@ class Home extends React.Component {
   }
   
   handleChange(e) {
-    this.setState({message: e.target.value});
+    this.setState({...this.state, message: e.target.value});
   }
   
   validateMessage(e) {
     e.preventDefault();
-    console.log(this.state);
+    let message = this.state.message;
+    if (message.length < 1) {
+      this.setState({...this.state, error: 'Enter a message first you fucking idiot'});
+    } else if (message.length > 70) {
+      this.setState({...this.state, error: 'Your message must be less than 70 characters'});
+    } else {
+      this.setState({...this.state, error: ''});
+      this.submitMessage();
+    }
   }
   
-  submitMessage(e) {
-    e.preventDefault();
+  submitMessage() {
+    this.setState({...this.state, sent: true});
     sendMessage(this.state);
   }
   
@@ -37,8 +47,8 @@ class Home extends React.Component {
         <div className="container">
           <div className="row">
             <div className="col-sm-12 col-md-6 col-md-offset-3">
-              <h1 className="header-text text-center">text oliver a sms message</h1>
-              <form onSubmit={this.submitMessage}>
+              <h1 className="header-text text-center">text oliver an sms message</h1>
+              <form onSubmit={this.validateMessage}>
                 <FormGroup
                   controlId="sendMessage"
                 >
@@ -51,15 +61,21 @@ class Home extends React.Component {
                     placeholder="Enter text"
                     onChange={this.handleChange}
                   />
-                  <FormControl.Feedback />
                 </FormGroup>
-                <Button
-                  block
-                  bsStyle="primary"
-                  type="submit"
-                >
-                  Send
-                </Button>
+                {this.state.error && <HelpBlock>{this.state.error}</HelpBlock>}
+                {this.state.sent ?
+                  <p className="text-success text-center bg-success success-block">
+                    <strong>Your message was sent</strong>
+                  </p>
+                  :
+                  <Button
+                    block
+                    bsStyle="danger"
+                    type="submit"
+                  >
+                    Send
+                  </Button>
+                }
               </form>
             </div>
           </div>
