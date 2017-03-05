@@ -1,8 +1,8 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {Button, FormGroup, FormControl, ControlLabel, HelpBlock} from 'react-bootstrap';
+import {Button, FormGroup, FormControl, ControlLabel, HelpBlock, ListGroup, ListGroupItem} from 'react-bootstrap';
 
-import {sendMessage} from '../actions/index';
+import {sendMessage, getMessages} from '../actions/index';
 
 class Home extends React.Component {
   constructor(props) {
@@ -17,6 +17,23 @@ class Home extends React.Component {
     this.validateMessage = this.validateMessage.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.submitMessage = this.submitMessage.bind(this);
+  };
+  
+  componentDidMount() {
+    this.props.dispatch(getMessages());
+  }
+  
+  renderMessages(currentMessages, index) {
+    let {IP, date, message} = currentMessages;
+    // let cleanedDate = date.split(" ");
+    return (
+      <ListGroupItem
+        key={index}
+        header={message}
+      >
+        {date}
+      </ListGroupItem>
+    )
   }
   
   handleChange(e) {
@@ -48,6 +65,9 @@ class Home extends React.Component {
           <div className="row">
             <div className="col-sm-12 col-md-6 col-md-offset-3">
               <h1 className="header-text text-center">text oliver an sms message</h1>
+              {this.props.sentMessages &&
+                <p className="text-center">Messages sent today: {this.props.sentMessages.length}</p>
+              }
               <form onSubmit={this.validateMessage}>
                 <FormGroup
                   controlId="sendMessage"
@@ -77,6 +97,14 @@ class Home extends React.Component {
                   </Button>
                 }
               </form>
+              {this.props.sentMessages &&
+              <div>
+                <h2 className="text-center messages-header">messages sent to oliver:</h2>
+                <ListGroup bsClass="list-group text-center messages-container">
+                  {this.props.sentMessages.map(this.renderMessages)}
+                </ListGroup>
+              </div>
+              }
             </div>
           </div>
         </div>
@@ -85,4 +113,10 @@ class Home extends React.Component {
   }
 }
 
-export default connect(null, null)(Home);
+function mapStateToProps(state) {
+  return {
+    sentMessages: state.messages.sentMessages
+  }
+}
+
+export default connect(mapStateToProps, null)(Home);

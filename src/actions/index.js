@@ -1,13 +1,14 @@
 import axios from 'axios';
 
 export const SEND_MESSAGE = 'SEND_MESSAGE';
+export const GET_MESSAGES = 'GET_MESSAGES';
 
-const ENDPOINT_URL = 'https://139.59.109.208:5000';
+const ENDPOINT_URL = 'http://odazler.com';
 
 export function sendMessage(props) {
   const request = axios({
     method:'POST',
-    url: `${ENDPOINT_URL}/send/`,
+    url: `/send/`,
     data: {
       message: props.message,
     }
@@ -15,6 +16,15 @@ export function sendMessage(props) {
   
   return {
     type: SEND_MESSAGE,
+    payload: request
+  }
+}
+
+export function getMessages() {
+  const request = axios.get(`${ENDPOINT_URL}/api/messagejson`);
+  
+  return {
+    type: GET_MESSAGES,
     payload: request
   }
 }
